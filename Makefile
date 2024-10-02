@@ -59,18 +59,6 @@ build-cloudfront-logs-lambda:
 	yarn --cwd modules/cloudfront-logs/lambda build
 
 
-###########################
-## Example Build Targets ##
-###########################
-example-clean: # Cleans the example Next.js application build outputs
-	rm -rf ${BUILD_FOLDER} || exit 0
-	mkdir -p ${BUILD_FOLDER}
-
-example-install: check # Installs the dependencies for the example project
-	yarn --cwd example install
-
-example-build: example-clean # Builds the example Next.js application
-	yarn --cwd example package
 
 tag-release: check-version build-cloudfront-logs-lambda
 	git add .
@@ -87,4 +75,3 @@ format-terraform: # Formats all Terraform Files
 	terraform -chdir=modules/opennext-cloudfront fmt
 	terraform -chdir=modules/opennext-lambda fmt
 	terraform -chdir=modules/opennext-revalidation-queue fmt
-	terraform -chdir=example/terraform fmt

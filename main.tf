@@ -55,6 +55,10 @@ module "server_function" {
   code_signing_config            = local.server_options.function.code_signing_config
   log_group                      = local.server_options.log_group
 
+  lambda_layer_arns = local.server_options.enable_lambda_insights ? [
+    local.lambda_insights_arns[local.server_options.function.architectures][local.aws_region]
+  ] : []
+
 
   source_dir = local.server_options.package.source_dir
   output_dir = local.server_options.package.output_dir
@@ -127,6 +131,10 @@ module "revalidation_function" {
   code_signing_config            = local.revalidation_options.function.code_signing_config
   log_group                      = local.revalidation_options.log_group
 
+  lambda_layer_arns = local.revalidation_options.enable_lambda_insights ? [
+    local.lambda_insights_arns[local.revalidation_options.function.architectures][local.aws_region]
+  ] : []
+
   source_dir = local.revalidation_options.package.source_dir
   output_dir = local.revalidation_options.package.output_dir
 
@@ -163,6 +171,9 @@ module "warmer_function" {
 
   prefix                            = "${var.prefix}-nextjs-warmer"
   create_eventbridge_scheduled_rule = true
+  lambda_layer_arns = local.warmer_options.enable_lambda_insights ? [
+    local.lambda_insights_arns[local.warmer_options.function.architectures][local.aws_region]
+  ] : []
 
 
   function_name                  = local.warmer_options.function.function_name
@@ -236,4 +247,30 @@ module "cloudfront" {
 
   custom_waf                = local.cloudfront.custom_waf
   waf_logging_configuration = local.cloudfront.waf_logging_configuration
+}
+
+
+resource "aws_dynamodb_table" "cache" {
+  name         = "${var.prefix}-cache"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "tag"
+  range_key    = "path"
+  attribute {
+    name = "tag"
+    type = "S"
+  }
+  attribute {
+    name = "path"
+    type = "S"
+  }
+  attribute {
+    name = "revalidatedAt"
+    type = "N"
+  }
+  global_secondary_index {
+    name            = "revalidate"
+    hash_key        = "path"
+    range_key       = "revalidatedAt"
+    projection_type = "ALL"
+  }
 }

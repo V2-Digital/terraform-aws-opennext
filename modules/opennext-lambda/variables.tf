@@ -204,3 +204,9 @@ variable "schedule_expression" {
   description = "The schedule expression of the eventbridge lambda trigger rule (if enabled)"
   default     = "rate(5 minutes)"
 }
+
+variable "lambda_layer_arns" {
+  type        = list(string)
+  description = "The ARNs of the Lambda layers to attach to the Lambda function"
+  default     = []
+}

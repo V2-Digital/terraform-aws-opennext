@@ -13,27 +13,7 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  get-metadata:
-    name: "Get Metadata"
-    runs-on: ubuntu-latest
-    outputs:
-      build_datetime: ${{ steps.metadata.outputs.build_datetime }}
-      build_timestamp: ${{ steps.metadata.outputs.build_timestamp }}
-      build_epoch: ${{ steps.metadata.outputs.build_epoch }}
-      terraform_version: ${{ steps.metadata.outputs.terraform_version }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - id: metadata
-        name: Get Metadata
-        uses: ./.github/actions/get-metadata
-
-      - id: cloc
-        name: Get Lines of Code
-        uses: ./.github/actions/cloc-repository
-
   formatting-checks:
-    needs: [get-metadata]
     runs-on: ubuntu-latest
     name: Formatting Checks
     steps:
@@ -51,7 +31,6 @@ jobs:
         uses: ./.github/actions/check-terraform-format
 
   security-scan:
-    needs: [get-metadata]
     runs-on: ubuntu-latest
     name: Security Scanning
     steps:
@@ -65,7 +44,6 @@ jobs:
       - name: Scan Secrets
         uses: ./.github/actions/scan-secrets
 
-
   checkov:
     name: Checkov
     runs-on: ubuntu-latest
@@ -76,7 +54,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install Latest Checkov
         id: install-checkov
@@ -118,88 +96,3 @@ jobs:
 
       - name: Run TFLint
         run: tflint -f compact
-
-  build-example-app:
-    name: Build Example App
-    runs-on: ubuntu-latest
-    needs: [tflint, checkov]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install asdf & tools
-        uses: asdf-vm/actions/install@v2
-
-      - name: Install Example Dependencies
-        run: make example-install
-
-      - name: Build Example App
-        run: make example-build
-
-      - name: Zip OpenNext Deployment Assets
-        run: cd example/.open-next && zip -r ../../open-next.zip . -q
-
-      - name: Store Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: example-app-opennext-build
-          path: open-next.zip
-
-  deploy:
-    name: Deploy Example App
-    runs-on: ubuntu-latest
-    needs: [build-example-app]
-    if: success() && github.ref_name == 'main'
-    concurrency: example-deploy
-    environment:
-      name: Example Application
-      url: https://terraform-aws-opennext.tools.engineering.england.nhs.uk/
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install asdf & tools
-        uses: asdf-vm/actions/install@v2
-
-      - id: aws-credentials
-        name: Setup AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ secrets.DEPLOYMENT_IAM_ROLE }}
-          aws-region: eu-west-2
-
-      - name: Get Current Identity
-        run: aws sts get-caller-identity
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: example-app-opennext-build
-
-      - name: Unzip Build Artifacts to .open-next folder
-        run: unzip -q -d example/.open-next open-next.zip
-
-      - name: Run Terraform Init
-        run: terraform -chdir=example/terraform init
-
-      - name: Run Terraform Plan
-        run: terraform -chdir=example/terraform plan -out example-app.tfplan
-
-      - name: Store Terraform Plan Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: example-app-tfplan-output
-          path: example/terraform/example-app.tfplan
-
-      - name: Run Terraform Apply
-        run: terraform -chdir=example/terraform apply example-app.tfplan
-
-      - name: Get CloudFront Distribution ID
-        id: get_distribution_id
-        run: echo "distribution_id=$(terraform -chdir=example/terraform output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
-
-      - name: Trigger CloudFront Cache Invalidation
-        id: trigger_invalidation
-        run: echo "invalidation_id=$(aws cloudfront create-invalidation --distribution-id ${{ steps.get_distribution_id.outputs.distribution_id }} --paths '/*' --output text --query Invalidation.Id)" >> "$GITHUB_OUTPUT"
-
-      - name: Wait for Invalidation
-        run: aws cloudfront wait invalidation-completed --distribution-id ${{ steps.get_distribution_id.outputs.distribution_id }} --id ${{ steps.trigger_invalidation.outputs.invalidation_id }}
