@@ -68,6 +68,7 @@ variable "server_options" {
       source_dir = optional(string)
       output_dir = optional(string)
     }))
+    enable_lambda_insights = optional(bool)
     function = optional(object({
       function_name                  = optional(string)
       description                    = optional(string)
@@ -200,6 +201,7 @@ variable "revalidation_options" {
       source_dir = optional(string)
       output_dir = optional(string)
     }))
+    enable_lambda_insights = optional(bool)
     function = optional(object({
       function_name                  = optional(string)
       description                    = optional(string)
@@ -266,6 +268,7 @@ variable "warmer_options" {
       source_dir = optional(string)
       output_dir = optional(string)
     }))
+    enable_lambda_insights = optional(bool)
     function = optional(object({
       function_name                  = optional(string)
       description                    = optional(string)

@@ -25,3 +25,7 @@ output "revalidation_queue" {
 output "cloudfront" {
   value = module.cloudfront
 }
+
+output "dynamodb_cache" {
+  value = aws_dynamodb_table.cache
+}
