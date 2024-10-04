@@ -259,29 +259,3 @@ module "cloudfront" {
   custom_waf                = local.cloudfront.custom_waf
   waf_logging_configuration = local.cloudfront.waf_logging_configuration
 }
-
-
-resource "aws_dynamodb_table" "cache" {
-  name         = "${var.prefix}-cache"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "tag"
-  range_key    = "path"
-  attribute {
-    name = "tag"
-    type = "S"
-  }
-  attribute {
-    name = "path"
-    type = "S"
-  }
-  attribute {
-    name = "revalidatedAt"
-    type = "N"
-  }
-  global_secondary_index {
-    name            = "revalidate"
-    hash_key        = "path"
-    range_key       = "revalidatedAt"
-    projection_type = "ALL"
-  }
-}
