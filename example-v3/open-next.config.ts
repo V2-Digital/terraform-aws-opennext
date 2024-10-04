@@ -1,14 +1,14 @@
 const config = {
-    default: {
-      override: {
-        wrapper: "aws-lambda-streaming",
-        queue: "sqs-lite",
-        incrementalCache: "s3-lite",
-        tagCache: "dynamodb-lite",
-      },
+  default: {
+    override: {
+      wrapper: "aws-lambda-streaming",
+      queue: "sqs-lite",
+      incrementalCache: "s3-lite",
+      tagCache: "dynamodb-lite",
     },
-    functions: {},
-    buildCommand: "yarn build",
-  };
-  
-  export default config;
+  },
+  functions: {},
+  buildCommand: "yarn build",
+};
+
+export default config;

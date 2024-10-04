@@ -1,101 +1,53 @@
-import Image from "next/image";
+import Nav from "@example/shared/components/Nav";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <h1>Nextjs App Router</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+      <main className="grid grid-cols-2 gap-4 p-10 [&>a]:border">
+        <Nav href={"/albums"} title="Albums">
+          Modal and interception of the greatest hits
+        </Nav>
+        <Nav href={"/rewrite"} title="Rewrite">
+          Middleware Rewrite of a page. /rewrite should rewrite the contents of
+          /rewrite-destination
+        </Nav>
+        <Nav href={"/redirect"} title="Redirect">
+          Middleware Rewrite of a page. /redirect should redirect page to
+          /redirect-destination
+        </Nav>
+        <Nav href={"/server-actions"} title="Server Actions">
+          Client component imports a 'use server' server action and calls it
+          directly without setting up any api endpoints
+        </Nav>
+        <Nav href={"/isr"} title="ISR">
+          Incremental Static Regeneration revalidates every 10 seconds with a
+          new timestamp
+        </Nav>
+        <Nav href={"/ssr"} title="SSR">
+          Server Side Render should generate a new timestamp on each load.
+          Streaming support for loading...
+        </Nav>
+        <Nav href={"/api"} title="API">
+          Calls an API endpoint defined in app/api/hello/route and middleware
+        </Nav>
+        <Nav href={"/parallel"} title="Parallel">
+          Parallel routing
+        </Nav>
+        <Nav href={"/headers"} title="Headers">
+          Headers from middleware should be available via headers()
+        </Nav>
+        <Nav href={"/search-query"} title="Search Query">
+          Search Query Params should be available in middleware
+        </Nav>
+        <Nav href={"/sse"} title="Server Sent Events">
+          Server Sent Events via Streaming
+        </Nav>
+        <Nav href={"/image-optimization"} title="Image Optimization">
+          Image Optimization with next/image
+        </Nav>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </>
   );
 }
