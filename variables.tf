@@ -52,6 +52,23 @@ variable "opennext_build_path" {
   description = "The path to the folder containing the .open-next build output"
 }
 
+variable "cache_table_options" {
+  description = "Variables passed to the opennext-dynamodb module for the cache table"
+  type = object({
+    kms_key_arn            = optional(string)
+    provisioned_throughput = optional(object({
+      read_capacity_units  = number
+      write_capacity_units = number
+    }))
+    point_in_time_recovery = optional(bool)
+  })
+  default = {
+    kms_key_arn            = null
+    provisioned_throughput = null
+    point_in_time_recovery = true
+  }
+}
+
 variable "server_options" {
   description = "Variables passed to the opennext-lambda module for the Next.js server"
   type = object({

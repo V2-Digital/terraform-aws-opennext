@@ -63,7 +63,7 @@ locals {
    **/
   server_options = {
     package = {
-      source_dir = coalesce(try(var.server_options.package.source_dir, null), "${local.opennext_abs_path}/server-function/")
+      source_dir = coalesce(try(var.server_options.package.source_dir, null), "${local.opennext_abs_path}/server-functions/default")
       output_dir = coalesce(try(var.server_options.package.output_dir, null), "${local.opennext_abs_path}/.build/")
     }
     enable_lambda_insights = coalesce(try(var.server_options.enable_lambda_insights, null), false)

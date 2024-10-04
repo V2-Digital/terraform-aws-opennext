@@ -30,6 +30,18 @@ module "assets" {
   server_function_role_arn = module.server_function.lambda_role.arn
 }
 
+/**
+ * DynamoDB Cache Table
+ **/
+module "cache" {
+  source       = "./modules/opennext-dynamodb"
+  region       = local.aws_region
+  default_tags = var.default_tags
+
+  prefix = var.prefix
+
+  table_options = var.cache_table_options
+}
 
 /**
  * Next.js Server Function
