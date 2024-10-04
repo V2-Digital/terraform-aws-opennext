@@ -31,6 +31,18 @@ module "assets" {
   static_asset_cache_config = var.static_asset_cache_config
 }
 
+/**
+ * DynamoDB Cache Table
+ **/
+module "cache_table" {
+  source       = "./modules/opennext-dynamodb"
+  region       = local.aws_region
+  default_tags = var.default_tags
+
+  prefix = var.prefix
+
+  table_options = var.cache_table_options
+}
 
 /**
  * Next.js Server Function
@@ -52,9 +64,9 @@ module "server_function" {
   publish                        = local.server_options.function.publish
   dead_letter_config             = local.server_options.function.dead_letter_config
   reserved_concurrent_executions = local.server_options.function.reserved_concurrent_executions
+  streaming_enabled              = local.server_options.function.streaming_enabled
   code_signing_config            = local.server_options.function.code_signing_config
   log_group                      = local.server_options.log_group
-
 
   source_dir = local.server_options.package.source_dir
   output_dir = local.server_options.package.output_dir
@@ -66,6 +78,42 @@ module "server_function" {
 
   environment_variables = local.server_options.environment_variables
   iam_policy_statements = local.server_options.iam_policy_statements
+}
+
+
+/**
+ * DynamoDB Cache Initializer Function
+ **/
+module "initializer_function" {
+  source       = "./modules/opennext-lambda"
+  region       = local.aws_region
+  default_tags = var.default_tags
+
+  prefix = "${var.prefix}-nextjs-server"
+
+  function_name                  = local.cache_initialiser_options.function.function_name
+  description                    = local.cache_initialiser_options.function.description
+  handler                        = local.cache_initialiser_options.function.handler
+  runtime                        = local.cache_initialiser_options.function.runtime
+  architectures                  = local.cache_initialiser_options.function.architectures
+  memory_size                    = local.cache_initialiser_options.function.memory_size
+  timeout                        = local.cache_initialiser_options.function.timeout
+  publish                        = local.cache_initialiser_options.function.publish
+  dead_letter_config             = local.cache_initialiser_options.function.dead_letter_config
+  reserved_concurrent_executions = local.cache_initialiser_options.function.reserved_concurrent_executions
+  code_signing_config            = local.cache_initialiser_options.function.code_signing_config
+  log_group                      = local.cache_initialiser_options.log_group
+
+  source_dir = local.cache_initialiser_options.package.source_dir
+  output_dir = local.cache_initialiser_options.package.output_dir
+
+  vpc_id                       = local.cache_initialiser_options.networking.vpc_id
+  subnet_ids                   = local.cache_initialiser_options.networking.subnet_ids
+  security_group_ingress_rules = local.cache_initialiser_options.networking.security_group_ingress_rules
+  security_group_egress_rules  = local.cache_initialiser_options.networking.security_group_egress_rules
+
+  environment_variables = local.cache_initialiser_options.environment_variables
+  iam_policy_statements = local.cache_initialiser_options.iam_policy_statements
 }
 
 
@@ -103,6 +151,19 @@ module "image_optimization_function" {
   environment_variables = local.image_optimization_options.environment_variables
   iam_policy_statements = local.image_optimization_options.iam_policy_statements
 }
+
+# tflint-ignore: terraform_unused_declarations
+data "aws_lambda_invocation" "cache_insert" {
+  function_name = module.initializer_function.lambda_function.function_name
+  input         = jsonencode({})
+
+  depends_on = [
+    module.cache_table.dynamodb_table,
+    module.initializer_function.lambda_function
+  ]
+}
+
+
 
 /**
  * ISR Revalidation Function
@@ -163,7 +224,6 @@ module "warmer_function" {
 
   prefix                            = "${var.prefix}-nextjs-warmer"
   create_eventbridge_scheduled_rule = true
-
 
   function_name                  = local.warmer_options.function.function_name
   description                    = local.warmer_options.function.description

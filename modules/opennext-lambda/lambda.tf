@@ -68,7 +68,7 @@ resource "aws_lambda_function_url" "function_url" {
 
   function_name      = aws_lambda_function.function.function_name
   authorization_type = "NONE"
-  invoke_mode        = "BUFFERED"
+  invoke_mode        = var.streaming_enabled ? "RESPONSE_STREAM" : "BUFFERED"
 }
 
 resource "aws_lambda_permission" "function_url_permission" {

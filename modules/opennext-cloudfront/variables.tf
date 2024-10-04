@@ -195,4 +195,3 @@ variable "remove_headers_config" {
     items = list(string)
   })
 }
-

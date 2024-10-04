@@ -67,10 +67,10 @@ example-clean: # Cleans the example Next.js application build outputs
 	mkdir -p ${BUILD_FOLDER}
 
 example-install: check # Installs the dependencies for the example project
-	yarn --cwd example install
+	yarn --cwd example-v3 install
 
 example-build: example-clean # Builds the example Next.js application
-	yarn --cwd example package
+	yarn --cwd example-v3 package
 
 tag-release: check-version build-cloudfront-logs-lambda
 	git add .

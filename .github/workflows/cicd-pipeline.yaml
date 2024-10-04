@@ -136,7 +136,7 @@ jobs:
         run: make example-build
 
       - name: Zip OpenNext Deployment Assets
-        run: cd example/.open-next && zip -r ../../open-next.zip . -q
+        run: cd example-v3/.open-next && zip -r ../../open-next.zip . -q
 
       - name: Store Build Artifacts
         uses: actions/upload-artifact@v3
@@ -152,7 +152,7 @@ jobs:
     concurrency: example-deploy
     environment:
       name: Example Application
-      url: https://terraform-aws-opennext.tools.engineering.england.nhs.uk/
+      url: https://opennext.v2.engineer
 
     steps:
       - uses: actions/checkout@v3
@@ -165,7 +165,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.DEPLOYMENT_IAM_ROLE }}
-          aws-region: eu-west-2
+          aws-region: ap-southeast-2
 
       - name: Get Current Identity
         run: aws sts get-caller-identity
@@ -176,26 +176,26 @@ jobs:
           name: example-app-opennext-build
 
       - name: Unzip Build Artifacts to .open-next folder
-        run: unzip -q -d example/.open-next open-next.zip
+        run: unzip -q -d example-v3/.open-next open-next.zip
 
       - name: Run Terraform Init
-        run: terraform -chdir=example/terraform init
+        run: terraform -chdir=example-v3/terraform init
 
       - name: Run Terraform Plan
-        run: terraform -chdir=example/terraform plan -out example-app.tfplan
+        run: terraform -chdir=example-v3/terraform plan -out example-app.tfplan
 
       - name: Store Terraform Plan Artifact
         uses: actions/upload-artifact@v3
         with:
           name: example-app-tfplan-output
-          path: example/terraform/example-app.tfplan
+          path: example-v3/terraform/example-app.tfplan
 
       - name: Run Terraform Apply
-        run: terraform -chdir=example/terraform apply example-app.tfplan
+        run: terraform -chdir=example-v3/terraform apply example-app.tfplan
 
       - name: Get CloudFront Distribution ID
         id: get_distribution_id
-        run: echo "distribution_id=$(terraform -chdir=example/terraform output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
+        run: echo "distribution_id=$(terraform -chdir=example-v3/terraform output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
 
       - name: Trigger CloudFront Cache Invalidation
         id: trigger_invalidation

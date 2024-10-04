@@ -15,7 +15,7 @@ export const handler: Handler<S3Event> = async (event, context) => {
     });
 
     const result = await putLogEvents(records);
-    
+
     const isSuccessful = result.every(output => output.$metadata.httpStatusCode === 200);
     if (!isSuccessful) {
         throw new Error(`One or more PutLogCommands failed:\n${util.inspect(result)}`);
