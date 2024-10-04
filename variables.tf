@@ -45,15 +45,6 @@ variable "evaluate_target_health" {
 }
 
 /**
- * OpenNext Assets variables
-**/
-variable "static_asset_cache_config" {
-  type        = string
-  description = "Static asset cache config"
-  default     = "public,max-age=0,s-maxage=31536000,must-revalidate"
-}
-
-/**
  * OpenNext Variables
  **/
 variable "opennext_build_path" {
