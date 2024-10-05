@@ -11,10 +11,7 @@
     "package": "open-next build"
   },
   "dependencies": {
-    "@example/shared": "workspace:*",
-    "@open-next/utils": "workspace:*",
     "next": "^14.1.4",
-    "@opennextjs/aws": "workspace:*",
     "react": "latest",
     "react-dom": "latest"
   },
