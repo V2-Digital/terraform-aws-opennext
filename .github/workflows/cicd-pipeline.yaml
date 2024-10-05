@@ -130,6 +130,7 @@ jobs:
         with:
           node-version: '18.17.0'
           cache: 'yarn'
+          cache-dependency-path: 'example-v3/yarn.lock'
 
       - name: Install asdf & tools
         uses: asdf-vm/actions/install@v2
