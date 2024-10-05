@@ -125,10 +125,10 @@ jobs:
     needs: [tflint, checkov]
     steps:
       - uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: '18.17.0'
           cache: 'yarn'
-          
+
       - uses: actions/checkout@v3
 
       - name: Install asdf & tools
