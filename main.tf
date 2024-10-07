@@ -89,7 +89,7 @@ module "initializer_function" {
   region       = local.aws_region
   default_tags = var.default_tags
 
-  prefix = "${var.prefix}-nextjs-cache-init"
+  prefix = "${var.prefix}-nextjs-server"
 
   function_name                  = local.cache_initialiser_options.function.function_name
   description                    = local.cache_initialiser_options.function.description

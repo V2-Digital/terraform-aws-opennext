@@ -50,7 +50,9 @@ module "opennext" {
   hosted_zone_id      = data.aws_route53_zone.zone.zone_id
 
   server_options = {
-    streaming_enabled = true
+    function = {
+      streaming_enabled = true
+    }
   }
 
   cloudfront = {
