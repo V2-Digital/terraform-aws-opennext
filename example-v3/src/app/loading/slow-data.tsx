@@ -1,16 +1,12 @@
 import { use } from "react";
 
-const fakeFetchSlowData = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        data: {
-          title: "Slow data",
-          description: "This data was fetched after 5 seconds",
-        },
-      });
-    }, 5000);
-  });
+const fakeFetchSlowData = async () => {
+  const data = await fetch("https://jsonplaceholder.typicode.com/todos/1", {
+    cache: "no-store",
+  }).then((response) => response.json());
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  return data;
 };
 
 export default function SlowData() {
