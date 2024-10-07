@@ -47,6 +47,10 @@ export default function Home() {
         <Nav href={"/image-optimization"} title="Image Optimization">
           Image Optimization with next/image
         </Nav>
+
+        <Nav href={"/loading"} title="Loading & Suspense">
+          Loading/Streaming/Suspense
+        </Nav>
       </main>
     </>
   );
