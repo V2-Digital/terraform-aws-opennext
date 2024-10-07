@@ -10804,9 +10804,9 @@ var require_XMLParser = __commonJS({
         this.options = buildOptions(options);
       }
       /**
-       * Parse XML dats to JS object 
-       * @param {string|Buffer} xmlData 
-       * @param {boolean|Object} validationOption 
+       * Parse XML dats to JS object
+       * @param {string|Buffer} xmlData
+       * @param {boolean|Object} validationOption
        */
       parse(xmlData, validationOption) {
         if (typeof xmlData === "string") {
@@ -10833,8 +10833,8 @@ var require_XMLParser = __commonJS({
       }
       /**
        * Add Entity which is not by default supported by this library
-       * @param {string} key 
-       * @param {string} value 
+       * @param {string} key
+       * @param {string} value
        */
       addEntity(key, value) {
         if (value.indexOf("&") !== -1) {
@@ -19053,7 +19053,7 @@ var require_SignatureV4MultiRegion = __commonJS({
               throw new Error();
           } catch (e) {
             e.message = `${e.message}
-Please check if you have installed "@aws-sdk/signature-v4-crt" package explicitly. 
+Please check if you have installed "@aws-sdk/signature-v4-crt" package explicitly.
 For more information please go to https://github.com/aws/aws-sdk-js-v3#functionality-requiring-aws-common-runtime-crt`;
             throw e;
           }
@@ -44033,10 +44033,10 @@ ${import_util2.default.inspect(result)}`);
 tslib/tslib.es6.js:
   (*! *****************************************************************************
   Copyright (c) Microsoft Corporation.
-  
+
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
   REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
   AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
@@ -44049,10 +44049,10 @@ tslib/tslib.es6.js:
 tslib/tslib.es6.js:
   (*! *****************************************************************************
   Copyright (c) Microsoft Corporation.
-  
+
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
   REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
   AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,

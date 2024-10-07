@@ -61,8 +61,92 @@ variable "opennext_build_path" {
   description = "The path to the folder containing the .open-next build output"
 }
 
+variable "cache_table_options" {
+  description = "Variables passed to the opennext-dynamodb module for the cache table"
+  type = object({
+    kms_key_arn = optional(string)
+    provisioned_throughput = optional(object({
+      read_capacity_units  = number
+      write_capacity_units = number
+    }))
+    point_in_time_recovery = optional(bool)
+  })
+  default = {
+    kms_key_arn            = null
+    provisioned_throughput = null
+    point_in_time_recovery = true
+  }
+}
+
 variable "server_options" {
   description = "Variables passed to the opennext-lambda module for the Next.js server"
+  type = object({
+    package = optional(object({
+      source_dir = optional(string)
+      output_dir = optional(string)
+    }))
+    function = optional(object({
+      function_name                  = optional(string)
+      description                    = optional(string)
+      handler                        = optional(string)
+      runtime                        = optional(string)
+      architectures                  = optional(list(string))
+      memory_size                    = optional(number)
+      timeout                        = optional(number)
+      publish                        = optional(bool)
+      reserved_concurrent_executions = optional(number)
+      streaming_enabled              = optional(bool)
+      dead_letter_config = optional(object({
+        target_arn = string
+      }))
+      code_signing_config = optional(object({
+        description                     = optional(string)
+        signing_profile_version_arns    = list(string)
+        untrusted_artfact_on_deployment = optional(string)
+      }))
+    }))
+    environment_variables = optional(map(string))
+    iam_policy = optional(list(object({
+      effect    = string
+      actions   = list(string)
+      resources = list(string)
+    })))
+    networking = optional(object({
+      vpc_id     = optional(string)
+      subnet_ids = optional(list(string))
+      sg_ingress_rules = optional(list(object({
+        description      = string
+        from_port        = number
+        to_port          = number
+        cidr_blocks      = optional(list(string))
+        ipv6_cidr_blocks = optional(list(string))
+        prefix_list_ids  = optional(list(string))
+        protocol         = optional(string)
+        security_groups  = optional(list(string))
+        self             = optional(bool)
+      })))
+      sg_egress_rules = optional(list(object({
+        description      = string
+        from_port        = number
+        to_port          = number
+        cidr_blocks      = optional(list(string))
+        ipv6_cidr_blocks = optional(list(string))
+        prefix_list_ids  = optional(list(string))
+        protocol         = optional(string)
+        security_groups  = optional(list(string))
+        self             = optional(bool)
+      })))
+    }))
+    log_group = optional(object({
+      retention_in_days = optional(number)
+      kms_key_id        = optional(string)
+    }))
+  })
+  default = {}
+}
+
+variable "cache_initialiser_options" {
+  description = "Variables passed to the opennext-lambda module for the Next.js Cache Initialiser function"
   type = object({
     package = optional(object({
       source_dir = optional(string)
@@ -126,6 +210,7 @@ variable "server_options" {
   })
   default = {}
 }
+
 
 variable "image_optimization_options" {
   description = "Variables passed to the opennext-lambda module for the Next.js Image Optimization function"
@@ -200,6 +285,7 @@ variable "revalidation_options" {
       source_dir = optional(string)
       output_dir = optional(string)
     }))
+    enable_lambda_insights = optional(bool)
     function = optional(object({
       function_name                  = optional(string)
       description                    = optional(string)
@@ -266,6 +352,7 @@ variable "warmer_options" {
       source_dir = optional(string)
       output_dir = optional(string)
     }))
+    enable_lambda_insights = optional(bool)
     function = optional(object({
       function_name                  = optional(string)
       description                    = optional(string)

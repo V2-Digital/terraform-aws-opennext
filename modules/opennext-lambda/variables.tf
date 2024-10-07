@@ -135,6 +135,12 @@ variable "reserved_concurrent_executions" {
   default     = 10
 }
 
+variable "streaming_enabled" {
+  description = "Use the streaming lambda pattern"
+  type        = bool
+  default     = false
+}
+
 
 /**
  * Lambda Networking

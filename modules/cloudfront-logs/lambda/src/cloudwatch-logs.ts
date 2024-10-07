@@ -79,6 +79,6 @@ export const putLogEvents: PutLogEventsFunction = async (records)  => {
         });
         return client.send(command);
     })
-    
+
     return Promise.all(putLogEventsCalls);
 }

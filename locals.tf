@@ -63,20 +63,20 @@ locals {
    **/
   server_options = {
     package = {
-      source_dir = coalesce(try(var.server_options.package.source_dir, null), "${local.opennext_abs_path}/server-function/")
+      source_dir = coalesce(try(var.server_options.package.source_dir, null), "${local.opennext_abs_path}/server-functions/default")
       output_dir = coalesce(try(var.server_options.package.output_dir, null), "${local.opennext_abs_path}/.build/")
     }
-
     function = {
       function_name                  = try(var.server_options.function.function_name, null)
       description                    = coalesce(try(var.server_options.function.description, null), "Next.js Server")
       handler                        = coalesce(try(var.server_options.function.handler, null), "index.handler")
       runtime                        = coalesce(try(var.server_options.function.runtime, null), "nodejs18.x")
       architectures                  = coalesce(try(var.server_options.function.architectures, null), ["arm64"])
-      memory_size                    = coalesce(try(var.server_options.function.memory_size, null), 512)
+      memory_size                    = coalesce(try(var.server_options.function.memory_size, null), 2048)
       timeout                        = coalesce(try(var.server_options.function.timeout, null), 30)
       publish                        = coalesce(try(var.server_options.function.publish, null), false)
       dead_letter_config             = try(var.server_options.function.dead_letter_config, null)
+      streaming_enabled              = coalesce(try(var.server_options.function.streaming_enabled, null), false)
       reserved_concurrent_executions = coalesce(try(var.server_options.function.reserved_concurrent_executions, null), 10)
       code_signing_config            = try(var.server_options.function.code_signing_config, null)
     }
@@ -97,6 +97,7 @@ locals {
       CACHE_BUCKET_NAME         = module.assets.assets_bucket.bucket
       CACHE_BUCKET_KEY_PREFIX   = "cache"
       CACHE_BUCKET_REGION       = data.aws_region.current.name
+      CACHE_DYNAMODB_TABLE      = module.cache_table.table.name
       REVALIDATION_QUEUE_URL    = module.revalidation_queue.queue.url
       REVALIDATION_QUEUE_REGION = data.aws_region.current.name
     }, coalesce(try(var.server_options.environment_variables, null), {}))
@@ -116,8 +117,60 @@ locals {
         effect    = "Allow"
         actions   = ["kms:GenerateDataKey", "kms:Decrypt"]
         resources = [module.revalidation_queue.queue_kms_key.arn]
+      },
+      {
+        effect    = "Allow"
+        actions   = ["dynamodb:BatchGetItem", "dynamodb:GetRecords", "dynamodb:Query", "dynamodb:GetItem", "dynamodb:Scan", "dynamodb:BatchWriteItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:DescribeTable"]
+        resources = [module.cache_table.table.arn]
       }
     ], coalesce(try(var.server_options.iam_policy, null), []))
+  }
+
+  /**
+   * Cache Initialiser Options
+   **/
+  cache_initialiser_options = {
+    package = {
+      source_dir = coalesce(try(var.cache_initialiser_options.package.source_dir, null), "${local.opennext_abs_path}/dynamodb-provider")
+      output_dir = coalesce(try(var.cache_initialiser_options.package.output_dir, null), "${local.opennext_abs_path}/.build/")
+    }
+    function = {
+      function_name                  = try(var.cache_initialiser_options.function.function_name, null)
+      description                    = coalesce(try(var.cache_initialiser_options.function.description, null), "Next.js Cache Initialiser")
+      handler                        = coalesce(try(var.cache_initialiser_options.function.handler, null), "index.handler")
+      runtime                        = coalesce(try(var.cache_initialiser_options.function.runtime, null), "nodejs18.x")
+      architectures                  = coalesce(try(var.cache_initialiser_options.function.architectures, null), ["arm64"])
+      memory_size                    = coalesce(try(var.cache_initialiser_options.function.memory_size, null), 2048)
+      timeout                        = coalesce(try(var.cache_initialiser_options.function.timeout, null), 30)
+      publish                        = coalesce(try(var.cache_initialiser_options.function.publish, null), false)
+      dead_letter_config             = try(var.cache_initialiser_options.function.dead_letter_config, null)
+      reserved_concurrent_executions = coalesce(try(var.cache_initialiser_options.function.reserved_concurrent_executions, null), 10)
+      code_signing_config            = try(var.cache_initialiser_options.function.code_signing_config, null)
+    }
+
+    log_group = {
+      retention_in_days = coalesce(try(var.cache_initialiser_options.log_group.retention_in_days, null), 365)
+      kms_key_id        = try(var.cache_initialiser_options.log_group.kms_key_id, null)
+    }
+
+    networking = {
+      vpc_id                       = try(var.cache_initialiser_options.networking.vpc_id, null)
+      subnet_ids                   = coalesce(try(var.cache_initialiser_options.networking.subnet_ids, null), [])
+      security_group_ingress_rules = coalesce(try(var.cache_initialiser_options.networking.sg_ingress_rules, null), [])
+      security_group_egress_rules  = coalesce(try(var.cache_initialiser_options.networking.sg_egress_rules, null), [])
+    }
+
+    environment_variables = merge({
+      CACHE_DYNAMODB_TABLE = module.cache_table.table.name
+    }, coalesce(try(var.cache_initialiser_options.environment_variables, null), {}))
+
+    iam_policy_statements = concat([
+      {
+        effect    = "Allow"
+        actions   = ["dynamodb:BatchWriteItem", "dynamodb:PutItem", "dynamodb:DescribeTable"]
+        resources = [module.cache_table.table.arn]
+      }
+    ], coalesce(try(var.cache_initialiser_options.iam_policy, null), []))
   }
 
   /**
@@ -257,8 +310,10 @@ locals {
     }
 
     environment_variables = merge({
-      FUNCTION_NAME = module.server_function.lambda_function.function_name,
-      CONCURRENCY   = 1
+      WARM_PARAMS = jsonencode([{
+        function    = module.server_function.lambda_function.function_name,
+        concurrency = 1
+      }])
     }, coalesce(try(var.warmer_options.environment_variables, null), {}))
 
     iam_policy_statements = concat([
