@@ -5,22 +5,7 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = ">= 4.0"
+      configuration_aliases = [ aws.global ]
     }
-  }
-}
-
-provider "aws" {
-  region = var.region
-  default_tags {
-    tags = var.default_tags
-  }
-}
-
-provider "aws" {
-  alias  = "global"
-  region = "us-east-1"
-
-  default_tags {
-    tags = var.default_tags
   }
 }

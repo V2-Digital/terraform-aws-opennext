@@ -43,9 +43,12 @@ provider "aws" {
 
 module "opennext" {
   source = "../../"
+  providers = {
+    aws = aws
+    aws.global = aws.global
+  }
 
   prefix              = "terraform-aws-opennext-example-v3"
-  default_tags        = local.default_tags
   opennext_build_path = "../.open-next"
   hosted_zone_id      = data.aws_route53_zone.zone.zone_id
 

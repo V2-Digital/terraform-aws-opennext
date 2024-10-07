@@ -38,6 +38,4 @@ resource "aws_dynamodb_table" "this" {
     name = "revalidatedAt"
     type = "N"
   }
-
-  tags = var.default_tags
 }

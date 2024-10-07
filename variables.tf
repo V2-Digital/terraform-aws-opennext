@@ -8,22 +8,6 @@ variable "prefix" {
   default     = "opennext"
 }
 
-variable "default_tags" {
-  type        = map(string)
-  description = "Default tags to apply to all created resources"
-  default     = {}
-}
-
-/**
- * AWS Provider Variables
- **/
-variable "region" {
-  type        = string
-  description = "The deployment region to be used by the AWS provider."
-  default     = null
-}
-
-
 /**
  * Route53 (DNS) Variables
  **/
@@ -211,7 +195,6 @@ variable "cache_initialiser_options" {
   default = {}
 }
 
-
 variable "image_optimization_options" {
   description = "Variables passed to the opennext-lambda module for the Next.js Image Optimization function"
   type = object({
@@ -285,7 +268,6 @@ variable "revalidation_options" {
       source_dir = optional(string)
       output_dir = optional(string)
     }))
-    enable_lambda_insights = optional(bool)
     function = optional(object({
       function_name                  = optional(string)
       description                    = optional(string)
@@ -352,7 +334,6 @@ variable "warmer_options" {
       source_dir = optional(string)
       output_dir = optional(string)
     }))
-    enable_lambda_insights = optional(bool)
     function = optional(object({
       function_name                  = optional(string)
       description                    = optional(string)

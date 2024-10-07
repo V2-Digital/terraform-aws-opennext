@@ -3,17 +3,6 @@ variable "prefix" {
   description = "Prefix for created resource IDs"
 }
 
-variable "default_tags" {
-  type        = map(string)
-  description = "Default tags to apply to all created resources"
-  default     = {}
-}
-
-variable "region" {
-  type        = string
-  description = "The deployment region to be used by the AWS provider."
-}
-
 variable "assets_path" {
   type        = string
   description = "The path of the open-next static assets"

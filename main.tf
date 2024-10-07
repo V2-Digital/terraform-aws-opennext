@@ -3,8 +3,9 @@ terraform {
 
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = ">= 4.0"
+      source                = "hashicorp/aws"
+      version               = ">= 4.0"
+      configuration_aliases = [aws.global]
     }
   }
 }
@@ -12,17 +13,11 @@ terraform {
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
-locals {
-  aws_region = var.region != null ? var.region : data.aws_region.current.name
-}
-
 /**
  * Assets & Cache S3 Bucket
  **/
 module "assets" {
-  source       = "./modules/opennext-assets"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-assets"
 
   prefix                    = "${var.prefix}-assets"
   assets_path               = "${local.opennext_abs_path}/assets"
@@ -35,9 +30,7 @@ module "assets" {
  * DynamoDB Cache Table
  **/
 module "cache_table" {
-  source       = "./modules/opennext-dynamodb"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-dynamodb"
 
   prefix = var.prefix
 
@@ -48,9 +41,7 @@ module "cache_table" {
  * Next.js Server Function
  **/
 module "server_function" {
-  source       = "./modules/opennext-lambda"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-lambda"
 
   prefix = "${var.prefix}-nextjs-server"
 
@@ -85,9 +76,7 @@ module "server_function" {
  * DynamoDB Cache Initializer Function
  **/
 module "initializer_function" {
-  source       = "./modules/opennext-lambda"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-lambda"
 
   prefix = "${var.prefix}-nextjs-cache-init"
 
@@ -121,9 +110,7 @@ module "initializer_function" {
  * Image Optimization Function
  **/
 module "image_optimization_function" {
-  source       = "./modules/opennext-lambda"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-lambda"
 
   prefix = "${var.prefix}-nextjs-image-optimization"
 
@@ -169,9 +156,7 @@ data "aws_lambda_invocation" "cache_insert" {
  * ISR Revalidation Function
  **/
 module "revalidation_function" {
-  source       = "./modules/opennext-lambda"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-lambda"
 
   prefix = "${var.prefix}-nextjs-revalidation"
 
@@ -204,10 +189,8 @@ module "revalidation_function" {
  * ISR Revalidation Queue
  **/
 module "revalidation_queue" {
-  source       = "./modules/opennext-revalidation-queue"
-  prefix       = "${var.prefix}-revalidation-queue"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-revalidation-queue"
+  prefix = "${var.prefix}-revalidation-queue"
 
   aws_account_id            = data.aws_caller_identity.current.account_id
   revalidation_function_arn = module.revalidation_function.lambda_function.arn
@@ -218,9 +201,7 @@ module "revalidation_queue" {
  **/
 
 module "warmer_function" {
-  source       = "./modules/opennext-lambda"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-lambda"
 
   prefix                            = "${var.prefix}-nextjs-warmer"
   create_eventbridge_scheduled_rule = true
@@ -254,9 +235,7 @@ module "warmer_function" {
  * CloudFront -> CloudWatch Logs
  **/
 module "cloudfront_logs" {
-  source       = "./modules/cloudfront-logs"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/cloudfront-logs"
 
   log_group_name  = "${var.prefix}-cloudfront-logs"
   log_bucket_name = "${var.prefix}-cloudfront-logs"
@@ -267,12 +246,16 @@ module "cloudfront_logs" {
  * Next.js CloudFront Distribution
  **/
 module "cloudfront" {
-  source       = "./modules/opennext-cloudfront"
-  prefix       = "${var.prefix}-cloudfront"
-  region       = local.aws_region
-  default_tags = var.default_tags
+  source = "./modules/opennext-cloudfront"
 
-  price_class = local.cloudfront.price_class
+  providers = {
+    aws        = aws
+    aws.global = aws.global
+  }
+
+  prefix = "${var.prefix}-cloudfront"
+
+  price_class                  = local.cloudfront.price_class
 
   comment                       = local.cloudfront.comment
   logging_bucket_domain_name    = module.cloudfront_logs.logs_s3_bucket.bucket_regional_domain_name
@@ -280,8 +263,8 @@ module "cloudfront" {
 
   origins = {
     assets_bucket               = module.assets.assets_bucket.bucket_regional_domain_name
-    server_function             = "${module.server_function.lambda_function_url.url_id}.lambda-url.${local.aws_region}.on.aws"
-    image_optimization_function = "${module.image_optimization_function.lambda_function_url.url_id}.lambda-url.${local.aws_region}.on.aws"
+    server_function             = "${module.server_function.lambda_function_url.url_id}.lambda-url.${data.aws_region.current.name}.on.aws"
+    image_optimization_function = "${module.image_optimization_function.lambda_function_url.url_id}.lambda-url.${data.aws_region.current.name}.on.aws"
   }
 
   aliases               = local.cloudfront.aliases

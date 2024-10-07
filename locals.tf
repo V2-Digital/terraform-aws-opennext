@@ -97,7 +97,7 @@ locals {
       CACHE_BUCKET_NAME         = module.assets.assets_bucket.bucket
       CACHE_BUCKET_KEY_PREFIX   = "cache"
       CACHE_BUCKET_REGION       = data.aws_region.current.name
-      CACHE_DYNAMO_TABLE      = module.cache_table.table.name
+      CACHE_DYNAMO_TABLE        = module.cache_table.table.name
       REVALIDATION_QUEUE_URL    = module.revalidation_queue.queue.url
       REVALIDATION_QUEUE_REGION = data.aws_region.current.name
     }, coalesce(try(var.server_options.environment_variables, null), {}))
@@ -324,4 +324,5 @@ locals {
       }
     ], coalesce(try(var.warmer_options.iam_policy, null), []))
   }
+
 }
