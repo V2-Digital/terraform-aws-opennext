@@ -130,9 +130,6 @@ jobs:
       - name: Install asdf & tools
         uses: asdf-vm/actions/install@v2
 
-      - name: Install NodeJS
-        run: make nodejs-install
-
       - name: Install Example Dependencies
         run: make example-install
 
