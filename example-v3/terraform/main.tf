@@ -58,7 +58,7 @@ module "opennext" {
   cloudfront = {
     aliases             = [local.domain_name]
     acm_certificate_arn = aws_acm_certificate_validation.ssl_certificate.certificate_arn
-    assets_paths        = ["/images/*"]
+    assets_paths        = ["/images/*", "/static/*"]
   }
 }
 
