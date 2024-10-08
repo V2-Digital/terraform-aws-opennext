@@ -55,6 +55,7 @@ module "server_function" {
   publish                        = local.server_options.function.publish
   dead_letter_config             = local.server_options.function.dead_letter_config
   reserved_concurrent_executions = local.server_options.function.reserved_concurrent_executions
+  layers                         = local.server_options.function.layers
   streaming_enabled              = local.server_options.function.streaming_enabled
   code_signing_config            = local.server_options.function.code_signing_config
   log_group                      = local.server_options.log_group
@@ -90,6 +91,7 @@ module "initializer_function" {
   publish                        = local.cache_initialiser_options.function.publish
   dead_letter_config             = local.cache_initialiser_options.function.dead_letter_config
   reserved_concurrent_executions = local.cache_initialiser_options.function.reserved_concurrent_executions
+  layers                         = local.cache_initialiser_options.function.layers
   code_signing_config            = local.cache_initialiser_options.function.code_signing_config
   log_group                      = local.cache_initialiser_options.log_group
 
@@ -124,6 +126,7 @@ module "image_optimization_function" {
   publish                        = local.image_optimization_options.function.publish
   dead_letter_config             = local.image_optimization_options.function.dead_letter_config
   reserved_concurrent_executions = local.image_optimization_options.function.reserved_concurrent_executions
+  layers                         = local.image_optimization_options.function.layers
   code_signing_config            = local.image_optimization_options.function.code_signing_config
   log_group                      = local.image_optimization_options.log_group
 
@@ -170,6 +173,7 @@ module "revalidation_function" {
   publish                        = local.revalidation_options.function.publish
   dead_letter_config             = local.revalidation_options.function.dead_letter_config
   reserved_concurrent_executions = local.revalidation_options.function.reserved_concurrent_executions
+  layers                         = local.revalidation_options.function.layers
   code_signing_config            = local.revalidation_options.function.code_signing_config
   log_group                      = local.revalidation_options.log_group
 
@@ -216,6 +220,7 @@ module "warmer_function" {
   publish                        = local.warmer_options.function.publish
   dead_letter_config             = local.warmer_options.function.dead_letter_config
   reserved_concurrent_executions = local.warmer_options.function.reserved_concurrent_executions
+  layers                         = local.warmer_options.function.layers
   code_signing_config            = local.warmer_options.function.code_signing_config
   log_group                      = local.warmer_options.log_group
 
@@ -255,7 +260,7 @@ module "cloudfront" {
 
   prefix = "${var.prefix}-cloudfront"
 
-  price_class                  = local.cloudfront.price_class
+  price_class = local.cloudfront.price_class
 
   comment                       = local.cloudfront.comment
   logging_bucket_domain_name    = module.cloudfront_logs.logs_s3_bucket.bucket_regional_domain_name

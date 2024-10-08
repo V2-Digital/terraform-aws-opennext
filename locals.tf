@@ -78,6 +78,7 @@ locals {
       dead_letter_config             = try(var.server_options.function.dead_letter_config, null)
       streaming_enabled              = coalesce(try(var.server_options.function.streaming_enabled, null), false)
       reserved_concurrent_executions = coalesce(try(var.server_options.function.reserved_concurrent_executions, null), 10)
+      layers                         = coalesce(try(var.server_options.function.layers, null), [])
       code_signing_config            = try(var.server_options.function.code_signing_config, null)
     }
 
@@ -148,6 +149,7 @@ locals {
       publish                        = coalesce(try(var.cache_initialiser_options.function.publish, null), false)
       dead_letter_config             = try(var.cache_initialiser_options.function.dead_letter_config, null)
       reserved_concurrent_executions = coalesce(try(var.cache_initialiser_options.function.reserved_concurrent_executions, null), 10)
+      layers                         = coalesce(try(var.cache_initialiser_options.function.layers, null), [])
       code_signing_config            = try(var.cache_initialiser_options.function.code_signing_config, null)
     }
 
@@ -196,6 +198,7 @@ locals {
       publish                        = coalesce(try(var.image_optimization_options.function.publish, null), false)
       dead_letter_config             = try(var.image_optimization_options.function.dead_letter_config, null)
       reserved_concurrent_executions = coalesce(try(var.image_optimization_options.function.reserved_concurrent_executions, null), 3)
+      layers                         = coalesce(try(var.image_optimization_options.function.layers, null), [])
       code_signing_config            = try(var.image_optimization_options.function.code_signing_config, null)
     }
 
@@ -246,6 +249,7 @@ locals {
       publish                        = coalesce(try(var.revalidation_options.function.publish, null), false)
       dead_letter_config             = try(var.revalidation_options.function.dead_letter_config, null)
       reserved_concurrent_executions = coalesce(try(var.revalidation_options.function.reserved_concurrent_executions, null), 3)
+      layers                         = coalesce(try(var.revalidation_options.function.layers, null), [])
       code_signing_config            = try(var.revalidation_options.function.code_signing_config, null)
     }
 
@@ -297,6 +301,7 @@ locals {
       publish                        = coalesce(try(var.warmer_options.function.publish, null), false)
       dead_letter_config             = try(var.warmer_options.function.dead_letter_config, null)
       reserved_concurrent_executions = coalesce(try(var.warmer_options.function.reserved_concurrent_executions, null), 3)
+      layers                         = coalesce(try(var.warmer_options.function.layers, null), [])
       code_signing_config            = try(var.warmer_options.function.code_signing_config, null)
     }
 
@@ -327,5 +332,4 @@ locals {
       }
     ], coalesce(try(var.warmer_options.iam_policy, null), []))
   }
-
 }

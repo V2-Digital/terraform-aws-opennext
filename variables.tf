@@ -79,6 +79,7 @@ variable "server_options" {
       timeout                        = optional(number)
       publish                        = optional(bool)
       reserved_concurrent_executions = optional(number)
+      layers                         = optional(list(string))
       streaming_enabled              = optional(bool)
       dead_letter_config = optional(object({
         target_arn = string
@@ -146,6 +147,7 @@ variable "cache_initialiser_options" {
       timeout                        = optional(number)
       publish                        = optional(bool)
       reserved_concurrent_executions = optional(number)
+      layers                         = optional(list(string))
       dead_letter_config = optional(object({
         target_arn = string
       }))
@@ -212,6 +214,7 @@ variable "image_optimization_options" {
       timeout                        = optional(number)
       publish                        = optional(bool)
       reserved_concurrent_executions = optional(number)
+      layers                         = optional(list(string))
       dead_letter_config = optional(object({
         target_arn = string
       }))
@@ -278,6 +281,7 @@ variable "revalidation_options" {
       timeout                        = optional(number)
       publish                        = optional(bool)
       reserved_concurrent_executions = optional(number)
+      layers                         = optional(list(string))
       dead_letter_config = optional(object({
         target_arn = string
       }))
@@ -344,6 +348,7 @@ variable "warmer_options" {
       timeout                        = optional(number)
       publish                        = optional(bool)
       reserved_concurrent_executions = optional(number)
+      layers                         = optional(list(string))
       dead_letter_config = optional(object({
         target_arn = string
       }))

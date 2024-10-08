@@ -8,7 +8,8 @@ const config = {
     },
   },
   functions: {},
-  buildCommand: "yarn build"
+  buildCommand: "yarn build",
+  
 };
 
 export default config;

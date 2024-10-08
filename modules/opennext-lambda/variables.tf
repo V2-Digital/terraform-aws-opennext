@@ -130,6 +130,12 @@ variable "streaming_enabled" {
   default     = false
 }
 
+variable "layers" {
+  description = "List of Lambda Layer ARNs to attach to the Lambda function"
+  type        = list(string)
+  default     = []
+}
+
 
 /**
  * Lambda Networking
