@@ -119,9 +119,12 @@ locals {
         resources = [module.revalidation_queue.queue_kms_key.arn]
       },
       {
-        effect    = "Allow"
-        actions   = ["dynamodb:BatchGetItem", "dynamodb:GetRecords", "dynamodb:Query", "dynamodb:GetItem", "dynamodb:Scan", "dynamodb:BatchWriteItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:DescribeTable"]
-        resources = [module.cache_table.table.arn]
+        effect  = "Allow"
+        actions = ["dynamodb:BatchGetItem", "dynamodb:GetRecords", "dynamodb:Query", "dynamodb:GetItem", "dynamodb:Scan", "dynamodb:BatchWriteItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:DescribeTable"]
+        resources = [
+          module.cache_table.table.arn,
+          "${module.cache_table.table.arn}/index/*"
+          ]
       }
     ], coalesce(try(var.server_options.iam_policy, null), []))
   }
